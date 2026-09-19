@@ -118,7 +118,7 @@ def _comando_extraer(args: argparse.Namespace) -> int:
                     contraste=args.contraste,
                     validar_sscc=args.validar_sscc,
                 )
-            except Exception:  # noqa: BLE001 - un archivo corrupto no debe parar el lote
+            except Exception:
                 logger.exception("Error procesando %s", imagen.name)
                 continue
 
@@ -155,7 +155,7 @@ def _comando_rescate(args: argparse.Namespace) -> int:
                     patron_amplio=amplio,
                     validar_sscc=args.validar_sscc,
                 )
-            except Exception:  # noqa: BLE001
+            except Exception:
                 logger.exception("Error procesando %s", imagen.name)
                 continue
 

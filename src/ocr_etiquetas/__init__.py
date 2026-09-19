@@ -9,7 +9,7 @@ from .ocr import extraer_codigos, extraer_codigos_rescate
 __all__ = [
     "__version__",
     "es_sscc_valido",
-    "limpiar_codigo",
     "extraer_codigos",
     "extraer_codigos_rescate",
+    "limpiar_codigo",
 ]
