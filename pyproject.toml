@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ocr-etiquetas"
+version = "1.0.0"
+description = "Extracción por OCR de códigos numéricos en fotografías de etiquetas logísticas"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Sergio Antón" }]
+keywords = ["ocr", "easyocr", "sscc", "gs1", "etiquetas", "logistica"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+    "easyocr>=1.7.1",
+    "numpy>=1.26",
+    "pillow>=10.3",
+    "pillow-heif>=0.16",
+]
+
+[project.scripts]
+ocr-etiquetas = "ocr_etiquetas.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

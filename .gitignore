@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Herramientas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Datos del proyecto (nunca se versionan imágenes ni resultados)
+fotos/
+imagenes/
+datos/
+resultados/
+*.csv
+*.db
+*.jpg
+*.jpeg
+*.png
+*.heic
+
+# Modelos descargados por EasyOCR
+.EasyOCR/
+*.pth
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

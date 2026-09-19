@@ -1,0 +1,4 @@
+easyocr>=1.7.1
+numpy>=1.26
+pillow>=10.3
+pillow-heif>=0.16
