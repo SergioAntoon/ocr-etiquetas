@@ -1,126 +1,126 @@
 # ocr-etiquetas
 
-Extracción automática de códigos numéricos (18 dígitos, tipo SSCC/GS1) a partir de fotografías de etiquetas logísticas, usando OCR con redes neuronales ([EasyOCR](https://github.com/JaidedAI/EasyOCR)).
+Automatic extraction of numeric codes (18 digits, SSCC/GS1 type) from logistics label photographs using OCR with neural networks ([EasyOCR](https://github.com/JaidedAI/EasyOCR)).
 
-Pensado para lotes grandes de fotos tomadas con móvil: mala iluminación, etiquetas giradas, formato HEIC y cientos o miles de archivos que hay que procesar sin perder el trabajo si el proceso se interrumpe.
+Designed for large batches of mobile phone photos: poor lighting, rotated labels, HEIC format, and hundreds or thousands of files that need to be processed without losing progress if the process is interrupted.
 
-## Características
+## Features
 
-- **Tolerancia a errores del OCR.** Expresión regular flexible que acepta los caracteres que se confunden con dígitos (`O/0`, `I/1`, `S/5`, `B/8`…) y posterior normalización a dígitos.
-- **Validación con dígito de control GS1.** Opción `--validar-sscc` para descartar lecturas erróneas mediante el módulo 10 del SSCC: basta un dígito mal leído para que el código se rechace.
-- **Búsqueda multiángulo.** Prueba rotaciones de 0°, 90°, 180° y 270°, con ampliación y refuerzo de contraste configurables.
-- **Modo rescate.** Segunda pasada agresiva (escala de grises y parámetros internos de EasyOCR forzados) para las imágenes que la pasada estándar no resuelve, registrando además el texto crudo leído para revisión manual.
-- **Reanudación segura.** Los resultados se escriben en CSV incrementalmente; al relanzar el proceso se omiten los archivos ya tratados y no se generan duplicados.
-- **Soporte HEIC/HEIF** además de los formatos habituales.
+* **OCR error tolerance.** Flexible regular expression that accepts characters commonly confused with digits (`O/0`, `I/1`, `S/5`, `B/8`…) and then normalizes them into digits.
+* **GS1 check digit validation.** The `--validate-sscc` option discards incorrect readings using the SSCC modulo 10 algorithm: a single incorrectly read digit is enough for the code to be rejected.
+* **Multi-angle search.** Tests rotations of 0°, 90°, 180°, and 270°, with configurable image scaling and contrast enhancement.
+* **Rescue mode.** A second aggressive pass (grayscale conversion and forced EasyOCR internal parameters) for images that the standard pass cannot resolve, while also recording the raw OCR text for manual review.
+* **Safe resume.** Results are written incrementally to CSV; when restarting the process, already processed files are skipped and duplicates are not generated.
+* **HEIC/HEIF support** in addition to common image formats.
 
-## Instalación
+## Installation
 
-Requiere Python 3.10 o superior.
+Requires Python 3.10 or higher.
 
 ```bash
-git clone https://github.com/<usuario>/ocr-etiquetas.git
+git clone https://github.com/<user>/ocr-etiquetas.git
 cd ocr-etiquetas
 
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
-pip install -e .                 # instala el comando `ocr-etiquetas`
+pip install -e .                 # installs the `ocr-etiquetas` command
 ```
 
-> **GPU:** EasyOCR se apoya en PyTorch. Para acelerar por CUDA, instala la build de `torch` correspondiente a tu versión de CUDA antes de instalar las dependencias. Sin GPU, usa la opción `--cpu`.
+> **GPU:** EasyOCR relies on PyTorch. To enable CUDA acceleration, install the `torch` build matching your CUDA version before installing the dependencies. Without a GPU, use the `--cpu` option.
 
-## Uso
+## Usage
 
-Procesar una carpeta completa:
+Process an entire folder:
 
 ```bash
-ocr-etiquetas extraer ./fotos --salida resultados/codigos.csv
+ocr-etiquetas extract ./photos --output results/codes.csv
 ```
 
-Con validación de dígito de control y sin GPU:
+With check digit validation and without GPU:
 
 ```bash
-ocr-etiquetas extraer ./fotos -s resultados/codigos.csv --validar-sscc --cpu
+ocr-etiquetas extract ./photos -s results/codes.csv --validate-sscc --cpu
 ```
 
-Reanudar un lote interrumpido y reintentar solo lo que falló:
+Resume an interrupted batch and retry only failed items:
 
 ```bash
-ocr-etiquetas extraer ./fotos -s resultados/codigos.csv --reintentar-fallidos
+ocr-etiquetas extract ./photos -s results/codes.csv --retry-failed
 ```
 
-Pasada de rescate sobre imágenes concretas:
+Rescue pass on specific images:
 
 ```bash
-ocr-etiquetas rescate ./fotos -s resultados/rescate.csv -i IMG_0042.heic IMG_0117.jpg
+ocr-etiquetas rescue ./photos -s results/rescue.csv -i IMG_0042.heic IMG_0117.jpg
 ```
 
-También funciona sin instalar el paquete:
+It also works without installing the package:
 
 ```bash
-python -m ocr_etiquetas extraer ./fotos -s resultados/codigos.csv
+python -m ocr_etiquetas extract ./photos -s results/codes.csv
 ```
 
-### Opciones principales
+### Main options
 
-| Opción | Descripción | Por defecto |
-| --- | --- | --- |
-| `--prefijo` | Prefijo conocido del código | `4260` |
-| `--longitud` | Longitud total del código | `18` |
-| `--validar-sscc` | Filtra por dígito de control GS1 | desactivado |
-| `--angulos` | Rotaciones a probar (grados) | `0 90 180 270` |
-| `--escala` | Factor de ampliación de la imagen | `2` |
-| `--contraste` | Refuerzo de contraste | `1.5` |
-| `--cpu` | Fuerza ejecución sin GPU | desactivado |
-| `-v, --verboso` | Traza detallada | desactivado |
+| Option            | Description                  | Default        |
+| ----------------- | ---------------------------- | -------------- |
+| `--prefix`        | Known code prefix            | `4260`         |
+| `--length`        | Total code length            | `18`           |
+| `--validate-sscc` | Filters by GS1 check digit   | disabled       |
+| `--angles`        | Rotations to test (degrees)  | `0 90 180 270` |
+| `--scale`         | Image enlargement factor     | `2`            |
+| `--contrast`      | Contrast enhancement         | `1.5`          |
+| `--cpu`           | Forces execution without GPU | disabled       |
+| `-v, --verbose`   | Detailed trace output        | disabled       |
 
-### Formato de salida
+### Output format
 
-CSV con una fila por código detectado:
+CSV file with one row per detected code:
 
 ```csv
-archivo,codigo,metodo,texto_ocr
-IMG_0042.heic,426000123456789012,estandar,
-IMG_0117.jpg,,sin_resultado,
+file,code,method,ocr_text
+IMG_0042.heic,426000123456789012,standard,
+IMG_0117.jpg,,no_result,
 ```
 
-La columna `metodo` distingue las lecturas estándar de las de rescate y marca los archivos sin resultado, que son los candidatos a revisión manual.
+The `method` column distinguishes standard readings from rescue readings and marks files without results, which are candidates for manual review.
 
-## Estructura del proyecto
+## Project structure
 
-```
+```text
 src/ocr_etiquetas/
-├── __init__.py      API pública del paquete
-├── __main__.py      Punto de entrada `python -m ocr_etiquetas`
-├── almacen.py       Persistencia en CSV y lógica de reanudación
-├── cli.py           Interfaz de línea de comandos
-├── limpieza.py      Normalización de caracteres y validación GS1
-└── ocr.py           Preprocesado de imagen y extracción con EasyOCR
+├── __init__.py      Public package API
+├── __main__.py      `python -m ocr_etiquetas` entry point
+├── almacen.py       CSV persistence and resume logic
+├── cli.py           Command-line interface
+├── limpieza.py      Character normalization and GS1 validation
+└── ocr.py           Image preprocessing and extraction with EasyOCR
 ```
 
-## Notas técnicas
+## Technical notes
 
-El dígito de control del SSCC se calcula con el algoritmo módulo 10 de GS1: se ponderan los 17 primeros dígitos alternando 3 y 1, y el dígito de control es el complemento a la siguiente decena. Sirve como filtro de calidad muy eficaz frente a las confusiones típicas del OCR, aunque solo es aplicable si los códigos son realmente SSCC; por eso la validación es opcional.
+The SSCC check digit is calculated using the GS1 modulo 10 algorithm: the first 17 digits are weighted using alternating multipliers of 3 and 1, and the check digit is the complement to the next multiple of ten. It is a highly effective quality filter against typical OCR mistakes, although it is only applicable if the codes are actually SSCC codes; therefore, validation is optional.
 
-## Pruebas
+## Tests
 
 ```bash
 pip install pytest
 PYTHONPATH=src pytest -q
 ```
 
-## Hoja de ruta
+## Roadmap
 
-- [x] Pruebas unitarias sobre limpieza y validación de códigos.
-- [ ] Procesamiento por lotes en paralelo (multiproceso) para carpetas muy grandes.
-- [ ] Detección previa de la región de la etiqueta para reducir el ruido de fondo.
-- [ ] Informe resumen (tasa de acierto por método).
+* [x] Unit tests for code cleaning and validation.
+* [ ] Parallel batch processing (multiprocessing) for very large folders.
+* [ ] Preliminary label region detection to reduce background noise.
+* [ ] Summary report (accuracy rate by method).
 
-## Licencia
+## License
 
-MIT — ver [LICENSE](LICENSE).
+All Rights Reserved -See LICENSE
 
-## Autor
+## Author
 
-**Sergio Antón** — Estudiante de Ingeniería Informática, Universidad de Zaragoza (España), 2026.
+**Sergio Antón** — Computer Engineering Student, University of Zaragoza (Spain), 2026.
