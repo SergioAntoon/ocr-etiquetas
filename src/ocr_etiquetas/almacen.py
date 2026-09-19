@@ -7,10 +7,11 @@ trabajo ni duplicar filas.
 """
 
 from __future__ import annotations
-from typing import Self  # o from typing_extensions import Self
+
 import csv
 from pathlib import Path
 from types import TracebackType
+from typing import Self
 
 CABECERA = ("archivo", "codigo", "metodo", "texto_ocr")
 
@@ -25,11 +26,7 @@ class AlmacenResultados:
         self._fichero = None
         self._escritor: csv.writer | None = None  # type: ignore[valid-type]
 
-<<<<<<< HEAD
     def __enter__(self) -> Self:
-=======
-    def __enter__(self) -> AlmacenResultados:
->>>>>>> 53be936 (fix(ci): corregir errores de ruff)
         existe = self.ruta.exists()
         if existe:
             self.procesados = self._leer_procesados()
