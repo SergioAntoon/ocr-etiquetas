@@ -1,11 +1,11 @@
-"""Lectura de códigos de etiquetas mediante EasyOCR.
+"""Read label codes using EasyOCR.
 
-Contiene dos estrategias:
+Contains two strategies:
 
-* :func:`extraer_codigos` — pasada estándar: rota la imagen, la amplía y
-  refuerza el contraste hasta encontrar coincidencias.
-* :func:`extraer_codigos_rescate` — pasada agresiva para las imágenes que la
-  estrategia estándar no consigue resolver.
+* :func:`extraer_codigos` — standard pass: rotates the image, upscales it,
+  and enhances contrast until matches are found.
+* :func:`extraer_codigos_rescate` — aggressive pass for images that the
+  standard strategy cannot resolve.
 """
 
 from __future__ import annotations
@@ -22,14 +22,14 @@ from .limpieza import es_codigo_valido, es_sscc_valido, limpiar_codigo
 
 logger = logging.getLogger(__name__)
 
-try:  # Soporte opcional para fotografías .heic de iPhone.
+try:  # Optional support for .heic iPhone photos.
     from pillow_heif import register_heif_opener
 
     register_heif_opener()
 except ImportError:  # pragma: no cover
-    logger.warning("pillow-heif no disponible: no se podrán abrir imágenes HEIC/HEIF")
+    logger.warning("pillow-heif is not available: HEIC/HEIF images cannot be opened")
 
-#: Caracteres que el OCR puede devolver donde debería haber un dígito.
+#: Characters that OCR may return where a digit is expected.
 _CLASE_DIGITOS = r"[0-9OoQDIlLiZzSsGBAa\|!T]"
 
 ANGULOS_POR_DEFECTO: tuple[int, ...] = (0, 90, 180, 270)
@@ -39,21 +39,21 @@ EXTENSIONES_IMAGEN = {
 
 
 def construir_patron(prefijo: str = "4260", longitud: int = 18) -> re.Pattern[str]:
-    """Crea la expresión regular tolerante a errores del OCR."""
+    """Build an OCR-tolerant regular expression."""
     restantes = longitud - len(prefijo)
     return re.compile(rf"{prefijo}{_CLASE_DIGITOS}{{{restantes}}}", re.IGNORECASE)
 
 
-#: Último recurso: cualquier cadena alfanumérica de la longitud esperada.
+#: Last resort: any alphanumeric string with the expected length.
 def construir_patron_amplio(longitud: int = 18) -> re.Pattern[str]:
     return re.compile(rf"[A-Za-z0-9]{{{longitud}}}")
 
 
 def crear_lector(idiomas: Sequence[str] = ("en",), gpu: bool = True):
-    """Instancia el lector de EasyOCR (descarga los modelos la primera vez)."""
-    import easyocr  # Import diferido: cargar torch es lento.
+    """Create an EasyOCR reader (models are downloaded on first use)."""
+    import easyocr  # Deferred import: loading torch is slow.
 
-    logger.info("Cargando modelo EasyOCR (gpu=%s)...", gpu)
+    logger.info("Loading EasyOCR model (gpu=%s)...", gpu)
     return easyocr.Reader(list(idiomas), gpu=gpu)
 
 
@@ -66,7 +66,7 @@ def listar_imagenes(carpeta: Path) -> list[Path]:
 
 
 def _normalizar_texto(fragmentos: Iterable[str]) -> str:
-    """Une los fragmentos del OCR y elimina separadores irrelevantes."""
+    """Join OCR fragments and remove irrelevant separators."""
     texto = "".join(fragmentos)
     for caracter in (" ", "-", "_", ".", ","):
         texto = texto.replace(caracter, "")
@@ -85,7 +85,7 @@ def _depurar(
     prefijo_intacto: int,
     validar_sscc: bool,
 ) -> list[str]:
-    """Limpia las coincidencias y descarta las que no son códigos válidos."""
+    """Clean matches and discard invalid codes."""
     limpios = (limpiar_codigo(c, prefijo_intacto) for c in crudos)
     validos = [c for c in limpios if es_codigo_valido(c)]
     if validar_sscc:
@@ -103,10 +103,10 @@ def extraer_codigos(
     contraste: float = 1.5,
     validar_sscc: bool = False,
 ) -> list[str]:
-    """Devuelve los códigos encontrados en una imagen (lista vacía si ninguno).
+    """Return the codes found in an image (empty list if none are found).
 
-    Prueba cada rotación y se detiene en la primera que produce resultados
-    válidos, evitando trabajo innecesario en la mayoría de fotografías.
+    Each rotation is tested, stopping at the first one that produces valid
+    results to avoid unnecessary work on most photographs.
     """
     with Image.open(ruta_imagen) as archivo:
         imagen = archivo.convert("RGB")
@@ -117,7 +117,11 @@ def extraer_codigos(
         texto = _normalizar_texto(lector.readtext(matriz, detail=0))
         codigos = _depurar(patron.findall(texto), prefijo_intacto, validar_sscc)
         if codigos:
-            logger.debug("%s: códigos hallados con rotación %s°", ruta_imagen.name, angulo)
+            logger.debug(
+                "%s: codes found at rotation %s°",
+                ruta_imagen.name,
+                angulo,
+            )
             return codigos
     return []
 
@@ -133,10 +137,11 @@ def extraer_codigos_rescate(
     adjust_contrast: float = 0.7,
     validar_sscc: bool = False,
 ) -> tuple[list[str], str]:
-    """Pasada agresiva para imágenes difíciles.
+    """Run an aggressive pass for difficult images.
 
-    Convierte a escala de grises y fuerza los parámetros internos de EasyOCR.
-    Devuelve los códigos y el texto crudo leído, útil para revisión manual.
+    Converts the image to grayscale and forces EasyOCR's internal parameters.
+    Returns both the codes and the raw OCR text, which is useful for manual
+    review.
     """
     with Image.open(ruta_imagen) as archivo:
         matriz = np.array(archivo.convert("L"))
@@ -157,6 +162,6 @@ def extraer_codigos_rescate(
         return codigos, texto
 
     if patron_amplio is not None:
-        # Sin prefijo fiable: se limpia el código entero.
+        # Without a reliable prefix, clean the entire code.
         codigos = _depurar(patron_amplio.findall(texto), 0, validar_sscc)
     return codigos, texto
