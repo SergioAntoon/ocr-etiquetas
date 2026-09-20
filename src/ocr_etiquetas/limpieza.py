@@ -8,7 +8,7 @@ be discarded using the SSCC check digit (GS1 modulo 10).
 from __future__ import annotations
 
 # Map of characters that OCR commonly confuses with digits.
-REPLACEMENTS: dict[str, str] = {
+REEMPLAZOS: dict[str, str] = {
     "O": "0", "o": "0", "Q": "0", "D": "0",
     "I": "1", "l": "1", "i": "1", "|": "1", "!": "1",
     "Z": "2", "z": "2",
@@ -19,7 +19,7 @@ REPLACEMENTS: dict[str, str] = {
     "T": "7",
 }
 
-CODE_LENGTH = 18
+LONGITUD_CODIGO = 18
 
 
 def limpiar_codigo(texto: str, caracteres_intactos: int = 4) -> str:
@@ -41,7 +41,7 @@ def limpiar_codigo(texto: str, caracteres_intactos: int = 4) -> str:
 
 def es_codigo_valido(codigo: str) -> bool:
     """Check that the code is numeric and has the expected length."""
-    return codigo.isdigit() and len(codigo) == CODE_LENGTH
+    return codigo.isdigit() and len(codigo) == LONGITUD_CODIGO
 
 
 def digito_control_sscc(codigo: str) -> int:
