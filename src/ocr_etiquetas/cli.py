@@ -1,4 +1,4 @@
-"""Interfaz de línea de comandos de ocr-etiquetas."""
+"""Command-line interface for OCR-based label code extraction."""
 
 from __future__ import annotations
 
