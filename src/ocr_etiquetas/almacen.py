@@ -28,8 +28,10 @@ class AlmacenResultados:
 
     def __enter__(self) -> Self:
         existe = self.ruta.exists()
+
         if existe:
             self.procesados = self._leer_procesados()
+
         self.ruta.parent.mkdir(parents=True, exist_ok=True)
         self._fichero = self.ruta.open(
             "a" if existe else "w",
@@ -37,9 +39,11 @@ class AlmacenResultados:
             newline="",
         )
         self._escritor = csv.writer(self._fichero)
+
         if not existe:
             self._escritor.writerow(CABECERA)
             self._fichero.flush()
+
         return self
 
     def __exit__(
@@ -53,10 +57,15 @@ class AlmacenResultados:
 
     def _leer_procesados(self) -> set[str]:
         with self.ruta.open("r", encoding="utf-8", newline="") as fichero:
-            filas = [fila for fila in csv.DictReader(fichero) if fila.get("archivo")]
+            filas = [
+                fila
+                for fila in csv.DictReader(fichero)
+                if fila.get("archivo")
+            ]
 
         if self.reintentar_fallidos:
             return {fila["archivo"] for fila in filas if fila.get("codigo")}
+
         return {fila["archivo"] for fila in filas}
 
     def ya_procesado(self, nombre: str) -> bool:
@@ -71,9 +80,15 @@ class AlmacenResultados:
     ) -> None:
         """Add one row per code; if none are found, record the failed result."""
         if self._escritor is None or self._fichero is None:
-            raise RuntimeError("The storage must be used as a context manager (with ...)")
+            raise RuntimeError(
+                "The storage must be used as a context manager (with ...)"
+            )
 
-        filas = [(archivo, codigo, metodo, texto_ocr) for codigo in codigos]
+        filas = [
+            (archivo, codigo, metodo, texto_ocr)
+            for codigo in codigos
+        ]
+
         if not filas:
             filas = [(archivo, "", "sin_resultado", texto_ocr)]
 
