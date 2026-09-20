@@ -41,7 +41,7 @@ def limpiar_codigo(texto: str, caracteres_intactos: int = 4) -> str:
 
 def es_codigo_valido(codigo: str) -> bool:
     """Check that the code is numeric and has the expected length."""
-    return codigo.isdigit() and len(codigo) == LONGITUD_CODIGO
+    return codigo.isdigit() and len(codigo) == CODE_LENGTH
 
 
 def digito_control_sscc(codigo: str) -> int:
