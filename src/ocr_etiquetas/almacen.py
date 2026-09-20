@@ -17,7 +17,7 @@ CABECERA = ("archivo", "codigo", "metodo", "texto_ocr")
 
 
 class AlmacenResultados:
-    """Escribe resultados en CSV y evita reprocesar archivos ya guardados."""
+    """Write results to a CSV file and avoid reprocessing already saved files."""
 
     def __init__(self, ruta: Path, reintentar_fallidos: bool = False) -> None:
         self.ruta = Path(ruta)
@@ -31,7 +31,11 @@ class AlmacenResultados:
         if existe:
             self.procesados = self._leer_procesados()
         self.ruta.parent.mkdir(parents=True, exist_ok=True)
-        self._fichero = self.ruta.open("a" if existe else "w", encoding="utf-8", newline="")
+        self._fichero = self.ruta.open(
+            "a" if existe else "w",
+            encoding="utf-8",
+            newline="",
+        )
         self._escritor = csv.writer(self._fichero)
         if not existe:
             self._escritor.writerow(CABECERA)
@@ -65,9 +69,9 @@ class AlmacenResultados:
         metodo: str = "estandar",
         texto_ocr: str = "",
     ) -> None:
-        """Añade una fila por código; si no hay ninguno, deja constancia del fallo."""
+        """Add one row per code; if none are found, record the failed result."""
         if self._escritor is None or self._fichero is None:
-            raise RuntimeError("El almacén debe usarse como contexto (with ...)")
+            raise RuntimeError("The storage must be used as a context manager (with ...)")
 
         filas = [(archivo, codigo, metodo, texto_ocr) for codigo in codigos]
         if not filas:
