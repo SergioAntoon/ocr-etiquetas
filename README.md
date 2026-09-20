@@ -99,6 +99,46 @@ src/ocr_etiquetas/
 └── ocr.py           Image preprocessing and extraction with EasyOCR
 ```
 
+## Results
+
+The model has been evaluated on a dataset of **526 real-world images** collected from a logistics environment.
+
+### Detection Statistics
+
+| Result | Count | Percentage |
+|---|---:|---:|
+| Correctly identified in the first run | 485 | 92.2% |
+| Recovered using rescue mode | 10 | 1.9% |
+| Correctly rejected (no code present or unreadable code) | 13 | 2.5% |
+| Readable codes not identified by the system | 18 | 3.4% |
+| Total images evaluated | 526 | 100% |
+
+### Summary
+
+- **495/526 images** were correctly identified after combining the main OCR pipeline and the rescue mode.
+- **13/526 images** were correctly classified as cases where no valid SSCC could be extracted.
+- **18 images** contained apparently readable SSCC codes but were not successfully detected by the system.
+
+### Overall performance
+
+Considering both the main pipeline and the rescue process, the system achieved:
+
+**94.1% successful SSCC recovery rate**
+
+### Error Analysis
+
+The remaining failures were mainly related to:
+
+- poor image quality,
+- extreme perspective distortion,
+- reflections or uneven lighting,
+- variations in label printing quality,
+- limitations of the OCR engine under difficult conditions.
+
+These results were obtained using real production-like images. Due to the sensitive nature of the logistics information contained in the dataset, the evaluation images are not publicly available.
+
+> An image is considered correctly identified when the extracted SSCC matches the expected value and passes the corresponding format validation checks.
+
 ## Technical notes
 
 The SSCC check digit is calculated using the GS1 modulo 10 algorithm: the first 17 digits are weighted using alternating multipliers of 3 and 1, and the check digit is the complement to the next multiple of ten. It is a highly effective quality filter against typical OCR mistakes, although it is only applicable if the codes are actually SSCC codes; therefore, validation is optional.
