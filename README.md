@@ -1,4 +1,4 @@
-# ocr-etiquetas
+# OCR-etiquetas
 
 Automatic extraction of numeric codes (18 digits, SSCC/GS1 type) from logistics label photographs using OCR with neural networks ([EasyOCR](https://github.com/JaidedAI/EasyOCR)).
 
