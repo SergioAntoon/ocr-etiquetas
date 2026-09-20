@@ -18,14 +18,14 @@ Designed for large batches of mobile phone photos: poor lighting, rotated labels
 Requires Python 3.10 or higher.
 
 ```bash
-git clone https://github.com/SergioAntoon/ocr-etiquetas
-cd ocr-etiquetas
+git clone https://github.com/SergioAntoon/OCR-labels.git
+cd OCR-labels
 
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
-pip install -e .                 # installs the `ocr-etiquetas` command
+pip install -e .                 # installs the `ocr-labels` command
 ```
 
 > **GPU:** EasyOCR relies on PyTorch. To enable CUDA acceleration, install the `torch` build matching your CUDA version before installing the dependencies. Without a GPU, use the `--cpu` option.
@@ -35,31 +35,31 @@ pip install -e .                 # installs the `ocr-etiquetas` command
 Process an entire folder:
 
 ```bash
-ocr-etiquetas extract ./photos --output results/codes.csv
+ocr-labels extract ./photos --output results/codes.csv
 ```
 
 With check digit validation and without GPU:
 
 ```bash
-ocr-etiquetas extract ./photos -s results/codes.csv --validate-sscc --cpu
+ocr-labels extract ./photos -s results/codes.csv --validate-sscc --cpu
 ```
 
 Resume an interrupted batch and retry only failed items:
 
 ```bash
-ocr-etiquetas extract ./photos -s results/codes.csv --retry-failed
+ocr-labels extract ./photos -s results/codes.csv --retry-failed
 ```
 
 Rescue pass on specific images:
 
 ```bash
-ocr-etiquetas rescue ./photos -s results/rescue.csv -i IMG_0042.heic IMG_0117.jpg
+ocr-labels rescue ./photos -s results/rescue.csv -i IMG_0042.heic IMG_0117.jpg
 ```
 
 It also works without installing the package:
 
 ```bash
-python -m ocr_etiquetas extract ./photos -s results/codes.csv
+python -m ocr_labels extract ./photos -s results/codes.csv
 ```
 
 ### Main options
@@ -90,12 +90,12 @@ The `method` column distinguishes standard readings from rescue readings and mar
 ## Project structure
 
 ```text
-src/ocr_etiquetas/
+src/ocr_labels/
 ├── __init__.py      Public package API
-├── __main__.py      `python -m ocr_etiquetas` entry point
-├── almacen.py       CSV persistence and resume logic
+├── __main__.py      `python -m ocr_labels` entry point
+├── storage.py       CSV persistence and resume logic
 ├── cli.py           Command-line interface
-├── limpieza.py      Character normalization and GS1 validation
+├── cleaning.py      Character normalization and GS1 validation
 └── ocr.py           Image preprocessing and extraction with EasyOCR
 ```
 
@@ -159,7 +159,7 @@ PYTHONPATH=src pytest -q
 
 ## License
 
-All Rights Reserved -See LICENSE
+All rights reserved — see LICENSE.
 
 ## Author
 

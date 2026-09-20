@@ -3,14 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ocr-etiquetas"
+name = "ocr-labels"
 version = "1.0.0"
-description = "Extracción por OCR de códigos numéricos en fotografías de etiquetas logísticas"
+description = "OCR-based extraction of numeric codes from logistics label photographs"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "Sergio Antón" }]
-keywords = ["ocr", "easyocr", "sscc", "gs1", "etiquetas", "logistica"]
+keywords = ["ocr", "easyocr", "sscc", "gs1", "labels", "logistics"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ocr-etiquetas = "ocr_etiquetas.cli:main"
+ocr-labels = "ocr_labels.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
