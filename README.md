@@ -18,7 +18,7 @@ Designed for large batches of mobile phone photos: poor lighting, rotated labels
 Requires Python 3.10 or higher.
 
 ```bash
-git clone https://github.com/<user>/ocr-etiquetas.git
+git clone https://github.com/SergioAntoon/ocr-etiquetas
 cd ocr-etiquetas
 
 python -m venv .venv
