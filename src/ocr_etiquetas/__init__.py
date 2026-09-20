@@ -1,4 +1,4 @@
-"""Extracción por OCR de códigos numéricos en fotografías de etiquetas."""
+"""OCR-based extraction of numeric codes from label images."""
 
 __version__ = "1.0.0"
 __author__ = "Sergio Antón"
