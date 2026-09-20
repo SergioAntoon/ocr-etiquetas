@@ -1,9 +1,9 @@
-"""Persistencia de resultados en CSV con soporte de reanudación.
+"""CSV result persistence with resume support.
 
-Los lotes grandes de fotografías tardan horas en procesarse. El almacén
-escribe cada código en cuanto se lee y recuerda qué archivos ya se han
-tratado, de modo que una ejecución interrumpida puede retomarse sin perder
-trabajo ni duplicar filas.
+Large batches of photographs can take hours to process. The storage layer
+writes each detected code as soon as it is extracted and keeps track of
+which files have already been processed, allowing interrupted executions
+to resume without losing work or creating duplicate rows.
 """
 
 from __future__ import annotations
